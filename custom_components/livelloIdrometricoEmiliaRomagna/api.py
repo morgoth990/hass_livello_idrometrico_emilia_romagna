@@ -40,30 +40,47 @@ class IntegrationBlueprintApiClient:
 
     def __init__(
         self,
-        username: str,
-        password: str,
+        station_name: str,
         session: aiohttp.ClientSession,
     ) -> None:
         """Sample API Client."""
-        self._username = username
-        self._password = password
+        self._station_name = station_name
         self._session = session
 
     async def async_get_data(self) -> Any:
+        result = None
         """Get data from the API."""
-        return await self._api_wrapper(
+        stations = await self._api_wrapper(
             method="get",
-            url="https://jsonplaceholder.typicode.com/posts/1",
+            url="https://allertameteo.regione.emilia-romagna.it/o/api/allerta/get-sensor-values-no-time?variabile=254,0,0/1,-,-,-/B13215",
         )
+        for station in stations:
+            if "nomestaz" in station and station["nomestaz"] == self._station_name:
+                id = station["idstazione"]
+                result = {
+                    "soglia1": station["soglia1"],
+                    "soglia2": station["soglia2"],
+                    "soglia3": station["soglia3"],
+                    "value": None,
+                }
 
-    async def async_set_title(self, value: str) -> Any:
-        """Get data from the API."""
-        return await self._api_wrapper(
-            method="patch",
-            url="https://jsonplaceholder.typicode.com/posts/1",
-            data={"title": value},
-            headers={"Content-type": "application/json; charset=UTF-8"},
-        )
+                values = await self._api_wrapper(
+                    method="get",
+                    url="https://allertameteo.regione.emilia-romagna.it/o/api/allerta/get-time-series/?stazione="
+                    + id
+                    + "&variabile=254,0,0/1,-,-,-/B13215",
+                )
+                t = 0
+                v = -1000
+                for value in values:
+                    if value["v"] != None and value["t"] > t:
+                        t = value["t"]
+                        v = value["v"]
+
+                if v != -1000:
+                    result["value"] = v
+
+        return result
 
     async def _api_wrapper(
         self,
