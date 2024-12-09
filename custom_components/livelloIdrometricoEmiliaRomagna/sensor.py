@@ -10,7 +10,8 @@ from .entity import IntegrationBlueprintEntity
 
 from homeassistant.const import CONF_NAME, UnitOfLength
 
-from .const import CONF_STATION_NAME
+from .const import CONF_STATION_NAME, DOMAIN
+
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -33,17 +34,17 @@ async def async_setup_entry(
         icon="mdi:waves-arrow-up",
     )
     entity_description_soglia1 = SensorEntityDescription(
-        key="livelloIdrometricoEmiliaRomagna",
+        key="livelloIdrometricoEmiliaRomagna_GREEN",
         name=entry.data[CONF_STATION_NAME] + " GREEN level",
         icon="mdi:format-header-1",
     )
     entity_description_soglia2 = SensorEntityDescription(
-        key="livelloIdrometricoEmiliaRomagna",
+        key="livelloIdrometricoEmiliaRomagna_ORANGE",
         name=entry.data[CONF_STATION_NAME] + " ORANGE level",
         icon="mdi:format-header-2",
     )
     entity_description_soglia3 = SensorEntityDescription(
-        key="livelloIdrometricoEmiliaRomagna",
+        key="livelloIdrometricoEmiliaRomagna_RED",
         name=entry.data[CONF_STATION_NAME] + " RED level",
         icon="mdi:format-header-3",
     )
@@ -84,10 +85,12 @@ class IntegrationBlueprintSensor(IntegrationBlueprintEntity, SensorEntity):
         entity_description: SensorEntityDescription,
     ) -> None:
         """Initialize the sensor class."""
-        super().__init__(coordinator)
+
         self._attr_unique_id = coordinator.config_entry.entry_id + "_" + value_name
         self.value_name = value_name
         self.entity_description = entity_description
+
+        super().__init__(coordinator)
 
     @property
     def native_unit_of_measurement(self) -> str | None:
