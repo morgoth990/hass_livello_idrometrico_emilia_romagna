@@ -10,6 +10,12 @@ if [[ ! -d "${PWD}/config" ]]; then
     hass --config "${PWD}/config" --script ensure_config
 fi
 
+# Ensure reverse proxy configuration in configuration.yaml
+CONFIG_FILE="${PWD}/config/configuration.yaml"
+if ! grep -q "use_x_forwarded_for:" "$CONFIG_FILE"; then
+    echo -e "\n# Reverse Proxy Configuration\nhttp:\n  use_x_forwarded_for: true\n  trusted_proxies:\n    - 127.0.0.1 # Add other proxy IPs if necessary\n    - ::1" >> "$CONFIG_FILE"
+fi
+
 # Set the path to custom_components
 ## This let's us have the structure we want <root>/custom_components/integration_blueprint
 ## while at the same time have Home Assistant configuration inside <root>/config

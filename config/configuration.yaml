@@ -10,3 +10,11 @@ logger:
   default: info
   logs:
     custom_components.integration_blueprint: debug
+
+# Reverse Proxy Configuration
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 127.0.0.1 # Add other proxy IPs if necessary
+    - ::1
+
