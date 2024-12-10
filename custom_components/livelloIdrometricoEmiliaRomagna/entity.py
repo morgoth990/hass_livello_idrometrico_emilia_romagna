@@ -7,6 +7,8 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .coordinator import BlueprintDataUpdateCoordinator
 
+from .const import CONF_STATION_NAME
+
 
 class IntegrationBlueprintEntity(CoordinatorEntity[BlueprintDataUpdateCoordinator]):
     """BlueprintEntity class."""
@@ -22,5 +24,5 @@ class IntegrationBlueprintEntity(CoordinatorEntity[BlueprintDataUpdateCoordinato
                     coordinator.config_entry.entry_id,
                 ),
             },
-            name=coordinator.config_entry.entry_id,
+            name=coordinator.config_entry.data[CONF_STATION_NAME],
         )

@@ -1,7 +1,9 @@
 """Adds config flow for Blueprint."""
 
 from __future__ import annotations
+from unittest import result
 
+from numpy import append
 import voluptuous as vol
 from homeassistant import config_entries, data_entry_flow
 
@@ -10,7 +12,6 @@ from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .api import (
     IntegrationBlueprintApiClient,
-    IntegrationBlueprintApiClientAuthenticationError,
     IntegrationBlueprintApiClientCommunicationError,
     IntegrationBlueprintApiClientError,
 )
@@ -31,9 +32,6 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 await self._test_stationName(station_name=user_input[CONF_STATION_NAME])
-            except IntegrationBlueprintApiClientAuthenticationError as exception:
-                LOGGER.warning(exception)
-                _errors["base"] = "auth"
             except IntegrationBlueprintApiClientCommunicationError as exception:
                 LOGGER.error(exception)
                 _errors["base"] = "connection"
@@ -46,6 +44,15 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     data=user_input,
                 )
 
+        station_names = []
+        client = IntegrationBlueprintApiClient(
+            station_name="",
+            session=async_create_clientsession(self.hass),
+        )
+        result = await client.async_get_stations()
+        for station in result:
+            station_names.append(station["nomestaz"])
+
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
@@ -55,9 +62,9 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         default=(user_input or {}).get(
                             CONF_STATION_NAME, vol.UNDEFINED
                         ),
-                    ): selector.TextSelector(
-                        selector.TextSelectorConfig(
-                            type=selector.TextSelectorType.TEXT,
+                    ): selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=station_names,
                         ),
                     ),
                 },

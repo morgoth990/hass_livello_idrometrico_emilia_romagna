@@ -4,13 +4,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.components.sensor import (
+    SensorEntity,
+    SensorEntityDescription,
+    SensorDeviceClass,
+    SensorStateClass,
+)
 
 from .entity import IntegrationBlueprintEntity
 
 from homeassistant.const import CONF_NAME, UnitOfLength
 
-from .const import CONF_STATION_NAME, DOMAIN
+from .const import CONF_STATION_NAME, DOMAIN, LOGGER
 
 
 if TYPE_CHECKING:
@@ -30,22 +35,22 @@ async def async_setup_entry(
 
     entity_description_value = SensorEntityDescription(
         key="livelloIdrometricoEmiliaRomagna",
-        name=entry.data[CONF_STATION_NAME],
+        name=entry.data[CONF_STATION_NAME] + " Water level",
         icon="mdi:waves-arrow-up",
     )
     entity_description_soglia1 = SensorEntityDescription(
-        key="livelloIdrometricoEmiliaRomagna_GREEN",
-        name=entry.data[CONF_STATION_NAME] + " GREEN level",
+        key="livelloIdrometricoEmiliaRomagna_level1",
+        name=entry.data[CONF_STATION_NAME] + " Theshold 1 [YELLOW]",
         icon="mdi:format-header-1",
     )
     entity_description_soglia2 = SensorEntityDescription(
-        key="livelloIdrometricoEmiliaRomagna_ORANGE",
-        name=entry.data[CONF_STATION_NAME] + " ORANGE level",
+        key="livelloIdrometricoEmiliaRomagna_level2",
+        name=entry.data[CONF_STATION_NAME] + " Theshold 2 [ORANGE]",
         icon="mdi:format-header-2",
     )
     entity_description_soglia3 = SensorEntityDescription(
-        key="livelloIdrometricoEmiliaRomagna_RED",
-        name=entry.data[CONF_STATION_NAME] + " RED level",
+        key="livelloIdrometricoEmiliaRomagna_level3",
+        name=entry.data[CONF_STATION_NAME] + " Theshold 3 [RED]",
         icon="mdi:format-header-3",
     )
 
@@ -89,6 +94,9 @@ class IntegrationBlueprintSensor(IntegrationBlueprintEntity, SensorEntity):
         self._attr_unique_id = coordinator.config_entry.entry_id + "_" + value_name
         self.value_name = value_name
         self.entity_description = entity_description
+
+        self._attr_device_class = SensorDeviceClass.DISTANCE
+        self._attr_state_class = SensorStateClass.MEASUREMENT
 
         super().__init__(coordinator)
 

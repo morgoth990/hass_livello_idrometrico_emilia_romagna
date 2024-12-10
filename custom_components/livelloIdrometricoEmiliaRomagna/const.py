@@ -1,8 +1,8 @@
-"""Constants for integration_blueprint."""
+"""Constants."""
 
 from logging import Logger, getLogger
 
 LOGGER: Logger = getLogger(__package__)
 
-DOMAIN = "integration_blueprint"
+DOMAIN = "livelloIdrometricoEmiliaRomagna"
 CONF_STATION_NAME = "station_name"

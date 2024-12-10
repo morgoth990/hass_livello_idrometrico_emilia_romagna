@@ -19,19 +19,7 @@ class IntegrationBlueprintApiClientCommunicationError(
     """Exception to indicate a communication error."""
 
 
-class IntegrationBlueprintApiClientAuthenticationError(
-    IntegrationBlueprintApiClientError,
-):
-    """Exception to indicate an authentication error."""
-
-
 def _verify_response_or_raise(response: aiohttp.ClientResponse) -> None:
-    """Verify that the response is valid."""
-    if response.status in (401, 403):
-        msg = "Invalid credentials"
-        raise IntegrationBlueprintApiClientAuthenticationError(
-            msg,
-        )
     response.raise_for_status()
 
 
@@ -50,14 +38,13 @@ class IntegrationBlueprintApiClient:
     async def async_get_data(self) -> Any:
         result = None
         """Get data from the API."""
-        stations = await self._api_wrapper(
-            method="get",
-            url="https://allertameteo.regione.emilia-romagna.it/o/api/allerta/get-sensor-values-no-time?variabile=254,0,0/1,-,-,-/B13215",
-        )
+        stations = await self.async_get_stations()
         for station in stations:
-            if "nomestaz" in station and station["nomestaz"] == self._station_name:
+            if station["nomestaz"] == self._station_name:
                 id = station["idstazione"]
                 result = {
+                    "lon": station["lon"],
+                    "lat": station["lat"],
                     "soglia1": station["soglia1"],
                     "soglia2": station["soglia2"],
                     "soglia3": station["soglia3"],
@@ -79,6 +66,18 @@ class IntegrationBlueprintApiClient:
 
                 if v != -1000:
                     result["value"] = v
+
+        return result
+
+    async def async_get_stations(self) -> Any:
+        result = []
+        stations = await self._api_wrapper(
+            method="get",
+            url="https://allertameteo.regione.emilia-romagna.it/o/api/allerta/get-sensor-values-no-time?variabile=254,0,0/1,-,-,-/B13215",
+        )
+        for station in stations:
+            if "nomestaz" in station:
+                result.append(station)
 
         return result
 
