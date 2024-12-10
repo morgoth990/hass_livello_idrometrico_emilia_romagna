@@ -1,4 +1,4 @@
-"""Sensor platform for integration_blueprint."""
+"""Sensor platform."""
 
 from __future__ import annotations
 
@@ -85,7 +85,7 @@ async def async_setup_entry(
 
 
 class WaterLevelSensor(IntegrationBlueprintEntity, SensorEntity):
-    """integration_blueprint Sensor class."""
+    """Sensor class."""
 
     def __init__(
         self,
@@ -115,7 +115,7 @@ class WaterLevelSensor(IntegrationBlueprintEntity, SensorEntity):
 
 
 class AlertSensor(IntegrationBlueprintEntity, SensorEntity):
-    """integration_blueprint Sensor class."""
+    """Sensor class."""
 
     def __init__(
         self,

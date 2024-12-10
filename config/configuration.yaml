@@ -9,7 +9,7 @@ homeassistant:
 logger:
   default: info
   logs:
-    custom_components.integration_blueprint: debug
+    custom_components.livello_idrometrico_emilia_romagna: debug
 
 # Reverse Proxy Configuration
 http:
