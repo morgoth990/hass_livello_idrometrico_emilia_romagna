@@ -140,7 +140,7 @@ class AlertSensor(IntegrationBlueprintEntity, SensorEntity):
         soglia3 = self.coordinator.data.get("soglia3")
 
         if value is None:
-            return "Unknown"
+            return None
 
         if value < soglia3 and value < soglia2 and value < soglia1:
             return "None"

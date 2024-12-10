@@ -1,12 +1,9 @@
 """Adds config flow for Blueprint."""
 
 from __future__ import annotations
-from unittest import result
 
-from numpy import append
 import voluptuous as vol
 from homeassistant import config_entries, data_entry_flow
-
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
@@ -15,7 +12,7 @@ from .api import (
     IntegrationBlueprintApiClientCommunicationError,
     IntegrationBlueprintApiClientError,
 )
-from .const import DOMAIN, LOGGER, CONF_STATION_NAME
+from .const import CONF_STATION_NAME, DOMAIN, LOGGER
 
 
 class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -31,7 +28,9 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         _errors = {}
         if user_input is not None:
             try:
-                await self._test_stationName(station_name=user_input[CONF_STATION_NAME])
+                await self._test_station_name(
+                    station_name=user_input[CONF_STATION_NAME]
+                )
             except IntegrationBlueprintApiClientCommunicationError as exception:
                 LOGGER.error(exception)
                 _errors["base"] = "connection"
@@ -51,11 +50,8 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         )
         result = await client.async_get_stations()
         for station in result:
-            if (
-                self.find_config_entry_with_title(self.hass, station["nomestaz"])
-                == None
-            ):
-                station_names.append(station["nomestaz"])
+            if self.find_config_entry_with_title(station["nomestaz"]) is None:
+                station_names.append(station["nomestaz"])  # noqa: PERF401
 
         return self.async_show_form(
             step_id="user",
@@ -74,7 +70,7 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=_errors,
         )
 
-    async def _test_stationName(self, station_name: str) -> None:
+    async def _test_station_name(self, station_name: str) -> None:
         """Validate credentials."""
         client = IntegrationBlueprintApiClient(
             station_name=station_name,
@@ -82,8 +78,11 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         )
         await client.async_get_data()
 
-    def find_config_entry_with_title(self, hass, title_to_search):
-        for entry in hass.config_entries.async_entries():
+    def find_config_entry_with_title(
+        self, title_to_search: str
+    ) -> config_entries.ConfigEntry | None:
+        """Find a conf entry with the specified title."""
+        for entry in self.hass.config_entries.async_entries():
             if entry.title == title_to_search:
                 return entry
         return None
