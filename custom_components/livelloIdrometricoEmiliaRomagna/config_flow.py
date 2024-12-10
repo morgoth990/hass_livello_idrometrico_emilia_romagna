@@ -51,7 +51,11 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         )
         result = await client.async_get_stations()
         for station in result:
-            station_names.append(station["nomestaz"])
+            if (
+                self.find_config_entry_with_title(self.hass, station["nomestaz"])
+                == None
+            ):
+                station_names.append(station["nomestaz"])
 
         return self.async_show_form(
             step_id="user",
@@ -63,9 +67,7 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             CONF_STATION_NAME, vol.UNDEFINED
                         ),
                     ): selector.SelectSelector(
-                        selector.SelectSelectorConfig(
-                            options=station_names,
-                        ),
+                        selector.SelectSelectorConfig(options=station_names, sort=True),
                     ),
                 },
             ),
@@ -79,3 +81,9 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             session=async_create_clientsession(self.hass),
         )
         await client.async_get_data()
+
+    def find_config_entry_with_title(self, hass, title_to_search):
+        for entry in hass.config_entries.async_entries():
+            if entry.title == title_to_search:
+                return entry
+        return None

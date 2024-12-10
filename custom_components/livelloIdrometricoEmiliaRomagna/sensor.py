@@ -134,7 +134,6 @@ class AlertSensor(IntegrationBlueprintEntity, SensorEntity):
         self.entity_description = entity_description
 
         self._attr_device_class = SensorDeviceClass.ENUM
-        self._attr_state_class = SensorStateClass.MEASUREMENT
         self.options = ["None", "Yellow", "Orange", "Red"]
 
         super().__init__(coordinator)

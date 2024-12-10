@@ -2,7 +2,7 @@
     "config": {
         "step": {
             "user": {
-                "description": "If you need help with the configuration have a look here: https://allertameteo.regione.emilia-romagna.it/livello-idrometrico",
+                "description": "If you need help look here to view all the availabe measurement stations: https://allertameteo.regione.emilia-romagna.it/livello-idrometrico",
                 "data": {
                     "station_name": "Station name"
                 }
