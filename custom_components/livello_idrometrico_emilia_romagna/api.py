@@ -36,12 +36,13 @@ class IntegrationBlueprintApiClient:
         self._session = session
 
     async def async_get_data(self) -> Any:
+        """Get station data."""
         result = None
         """Get data from the API."""
         stations = await self.async_get_stations()
         for station in stations:
             if station["nomestaz"] == self._station_name:
-                id = station["idstazione"]
+                station_id = station["idstazione"]
                 result = {
                     "lon": station["lon"],
                     "lat": station["lat"],
@@ -54,22 +55,23 @@ class IntegrationBlueprintApiClient:
                 values = await self._api_wrapper(
                     method="get",
                     url="https://allertameteo.regione.emilia-romagna.it/o/api/allerta/get-time-series/?stazione="
-                    + id
+                    + station_id
                     + "&variabile=254,0,0/1,-,-,-/B13215",
                 )
                 t = 0
-                v = -1000
+                v = None
                 for value in values:
-                    if value["v"] != None and value["t"] > t:
+                    if value["v"] is None and value["t"] > t:
                         t = value["t"]
                         v = value["v"]
 
-                if v != -1000:
+                if v is not None:
                     result["value"] = v
 
         return result
 
     async def async_get_stations(self) -> Any:
+        """Get the stations from the web api."""
         result = []
         stations = await self._api_wrapper(
             method="get",
@@ -77,7 +79,7 @@ class IntegrationBlueprintApiClient:
         )
         for station in stations:
             if "nomestaz" in station:
-                result.append(station)
+                result.append(station)  # noqa: PERF401
 
         return result
 

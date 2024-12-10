@@ -2,22 +2,17 @@
 
 from __future__ import annotations
 
-from ast import Num
 from typing import TYPE_CHECKING
 
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
-    SensorDeviceClass,
-    SensorStateClass,
 )
+from homeassistant.components.sensor.const import SensorDeviceClass, SensorStateClass
+from homeassistant.const import UnitOfLength
 
+from .const import CONF_STATION_NAME
 from .entity import IntegrationBlueprintEntity
-
-from homeassistant.const import CONF_NAME, UnitOfLength
-
-from .const import CONF_STATION_NAME, DOMAIN, LOGGER
-
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -33,7 +28,6 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-
     entity_description_value = SensorEntityDescription(
         key="livelloIdrometricoEmiliaRomagna",
         name=entry.data[CONF_STATION_NAME] + " Water level",
@@ -100,7 +94,6 @@ class WaterLevelSensor(IntegrationBlueprintEntity, SensorEntity):
         entity_description: SensorEntityDescription,
     ) -> None:
         """Initialize the sensor class."""
-
         self._attr_unique_id = coordinator.config_entry.entry_id + "_" + value_name
         self.value_name = value_name
         self.entity_description = entity_description
@@ -112,6 +105,7 @@ class WaterLevelSensor(IntegrationBlueprintEntity, SensorEntity):
 
     @property
     def native_unit_of_measurement(self) -> str | None:
+        """Return the unit of measurement of the sensor, if any."""
         return UnitOfLength.METERS
 
     @property
@@ -129,12 +123,11 @@ class AlertSensor(IntegrationBlueprintEntity, SensorEntity):
         entity_description: SensorEntityDescription,
     ) -> None:
         """Initialize the sensor class."""
-
         self._attr_unique_id = coordinator.config_entry.entry_id + "_alert"
         self.entity_description = entity_description
 
         self._attr_device_class = SensorDeviceClass.ENUM
-        self.options = ["None", "Yellow", "Orange", "Red"]
+        self.options = ["Unknown", "None", "Yellow", "Orange", "Red"]
 
         super().__init__(coordinator)
 
@@ -145,6 +138,9 @@ class AlertSensor(IntegrationBlueprintEntity, SensorEntity):
         soglia1 = self.coordinator.data.get("soglia1")
         soglia2 = self.coordinator.data.get("soglia2")
         soglia3 = self.coordinator.data.get("soglia3")
+
+        if value is None:
+            return "Unknown"
 
         if value < soglia3 and value < soglia2 and value < soglia1:
             return "None"

@@ -1,9 +1,4 @@
-"""
-Custom integration to integrate integration_blueprint with Home Assistant.
-
-For more details about this integration, please refer to
-https://github.com/ludeeus/integration_blueprint
-"""
+"""init."""
 
 from __future__ import annotations
 
@@ -14,9 +9,9 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.loader import async_get_loaded_integration
 
 from .api import IntegrationBlueprintApiClient
+from .const import CONF_STATION_NAME
 from .coordinator import BlueprintDataUpdateCoordinator
 from .data import IntegrationBlueprintData
-from .const import CONF_STATION_NAME
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
