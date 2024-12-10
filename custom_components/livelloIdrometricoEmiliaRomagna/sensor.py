@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from ast import Num
 from typing import TYPE_CHECKING
 
 from homeassistant.components.sensor import (
@@ -53,34 +54,43 @@ async def async_setup_entry(
         name=entry.data[CONF_STATION_NAME] + " Theshold 3 [RED]",
         icon="mdi:format-header-3",
     )
+    entity_description_alert = SensorEntityDescription(
+        key="livelloIdrometricoEmiliaRomagna_alert",
+        name=entry.data[CONF_STATION_NAME] + " Alert",
+        icon="mdi:alert",
+    )
 
     async_add_entities(
         {
-            IntegrationBlueprintSensor(
+            WaterLevelSensor(
                 "value",
                 coordinator=entry.runtime_data.coordinator,
                 entity_description=entity_description_value,
             ),
-            IntegrationBlueprintSensor(
+            WaterLevelSensor(
                 "soglia1",
                 coordinator=entry.runtime_data.coordinator,
                 entity_description=entity_description_soglia1,
             ),
-            IntegrationBlueprintSensor(
+            WaterLevelSensor(
                 "soglia2",
                 coordinator=entry.runtime_data.coordinator,
                 entity_description=entity_description_soglia2,
             ),
-            IntegrationBlueprintSensor(
+            WaterLevelSensor(
                 "soglia3",
                 coordinator=entry.runtime_data.coordinator,
                 entity_description=entity_description_soglia3,
+            ),
+            AlertSensor(
+                coordinator=entry.runtime_data.coordinator,
+                entity_description=entity_description_alert,
             ),
         }
     )
 
 
-class IntegrationBlueprintSensor(IntegrationBlueprintEntity, SensorEntity):
+class WaterLevelSensor(IntegrationBlueprintEntity, SensorEntity):
     """integration_blueprint Sensor class."""
 
     def __init__(
@@ -108,3 +118,39 @@ class IntegrationBlueprintSensor(IntegrationBlueprintEntity, SensorEntity):
     def native_value(self) -> str | None:
         """Return the native value of the sensor."""
         return self.coordinator.data.get(self.value_name)
+
+
+class AlertSensor(IntegrationBlueprintEntity, SensorEntity):
+    """integration_blueprint Sensor class."""
+
+    def __init__(
+        self,
+        coordinator: BlueprintDataUpdateCoordinator,
+        entity_description: SensorEntityDescription,
+    ) -> None:
+        """Initialize the sensor class."""
+
+        self._attr_unique_id = coordinator.config_entry.entry_id + "_alert"
+        self.entity_description = entity_description
+
+        self._attr_device_class = SensorDeviceClass.ENUM
+        self._attr_state_class = SensorStateClass.MEASUREMENT
+        self.options = ["None", "Yellow", "Orange", "Red"]
+
+        super().__init__(coordinator)
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the native value of the sensor."""
+        value = self.coordinator.data.get("value")
+        soglia1 = self.coordinator.data.get("soglia1")
+        soglia2 = self.coordinator.data.get("soglia2")
+        soglia3 = self.coordinator.data.get("soglia3")
+
+        if value < soglia3 and value < soglia2 and value < soglia1:
+            return "None"
+        if value < soglia3 and value < soglia2:
+            return "Yellow"
+        if value < soglia3:
+            return "Orange"
+        return "Red"
