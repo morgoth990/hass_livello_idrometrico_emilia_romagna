@@ -5,9 +5,8 @@ from __future__ import annotations
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .coordinator import BlueprintDataUpdateCoordinator
-
 from .const import CONF_STATION_NAME
+from .coordinator import BlueprintDataUpdateCoordinator
 
 
 class IntegrationBlueprintEntity(CoordinatorEntity[BlueprintDataUpdateCoordinator]):
