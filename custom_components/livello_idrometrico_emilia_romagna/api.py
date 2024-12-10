@@ -61,7 +61,7 @@ class IntegrationBlueprintApiClient:
                 t = 0
                 v = None
                 for value in values:
-                    if value["v"] is None and value["t"] > t:
+                    if value["v"] is not None and value["t"] > t:
                         t = value["t"]
                         v = value["v"]
 
