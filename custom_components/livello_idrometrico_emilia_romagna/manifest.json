@@ -1,6 +1,9 @@
 {
   "domain": "livello_idrometrico_emilia_romagna",
   "name": "Livello idrometrico Emilia Romagna",
+  "codeowners": [
+    "@morgoth990"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/morgoth990/hass-livelloIdrometrico-emiliaRomagna",
   "iot_class": "cloud_polling",
