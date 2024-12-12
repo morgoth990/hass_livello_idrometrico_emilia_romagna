@@ -1,5 +1,5 @@
 # Livello idrometrico Emilia Romagna
-This integration reads data from the official website of Emilia Romagna and can be used to create one or more Devices representing the measuring stations of the hydrometric level of rivers.
+This integration reads data from the [official website of Emilia Romagna](https://allertameteo.regione.emilia-romagna.it/livello-idrometrico) and can be used to create one or more Devices representing the measuring stations of the hydrometric level of rivers.
 
 ## Configuration
 This integration can be installed by adding the repository url via Hacs.
