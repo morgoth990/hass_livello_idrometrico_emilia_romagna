@@ -4,16 +4,16 @@
   "codeowners": [
     "@morgoth990"
   ],
+  "config_flow": true,
+  "dependencies": [
+    "http"
+  ],
+  "documentation": "https://github.com/morgoth990/hass-livelloIdrometrico-emiliaRomagna",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/morgoth990/hass-livelloIdrometrico-emiliaRomagna/issues",
   "requirements": [
     "aiohttp>=3.8.1",
     "cryptography>=3.4.8"
   ],
-  "dependencies": [
-    "http"
-  ],
-  "config_flow": true,
-  "documentation": "https://github.com/morgoth990/hass-livelloIdrometrico-emiliaRomagna",
-  "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/morgoth990/hass-livelloIdrometrico-emiliaRomagna/issues",
   "version": "0.0.2"
 }
