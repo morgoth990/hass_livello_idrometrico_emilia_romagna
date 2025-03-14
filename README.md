@@ -53,24 +53,18 @@ series:
     stroke_width: 1
     stroke_dash: 5
     fill_raw: last
-    group_by:
-      func: last
   - entity: sensor.lavino_di_sopra_theshold_2_orange
     type: line
     color: orange
     stroke_width: 1
     stroke_dash: 5
     fill_raw: last
-    group_by:
-      func: last
   - entity: sensor.lavino_di_sopra_theshold_1_yellow
     type: line
     color: yellow
     stroke_width: 1
     stroke_dash: 5
     fill_raw: last
-    group_by:
-      func: last
   - entity: sensor.lavino_di_sopra_water_level
     type: area
     color: steelblue
